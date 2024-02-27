@@ -65,10 +65,11 @@ class GeoMapper:
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
                 center = self._get_center(detection.bounding_box)
-                gps = camera.gpsFromImage([center.x, center.y])
+                gps = camera.gpsFromImage([center.x * sae_msg.frame.shape.width, center.y * sae_msg.frame.shape.height])
                 lat, lon = gps[0], gps[1]
                 detection.geo_coordinate.latitude = lat
                 detection.geo_coordinate.longitude = lon
+                logger.debug(f'cls {detection.class_id}, oid {detection.object_id.hex()}, lat {lat}, lon {lon}')
 
         return self._pack_proto(sae_msg)
         
