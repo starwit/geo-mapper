@@ -687,7 +687,7 @@ files = [
 
 [[package]]
 name = "visionapi"
-version = "1.1.0"
+version = "2.0.0"
 description = ""
 optional = false
 python-versions = "^3.10"
@@ -700,13 +700,13 @@ protobuf = "^4.23.0"
 [package.source]
 type = "git"
 url = "https://github.com/starwit/vision-api.git"
-reference = "1.1.0"
-resolved_reference = "782e65480fbae71495fc6be4490f5544255a2d39"
+reference = "2.0.0"
+resolved_reference = "7a84570c38242d59aa321dbbd951a345c07da145"
 subdirectory = "python/visionapi"
 
 [[package]]
 name = "visionlib"
-version = "0.6.2"
+version = "0.7.0"
 description = ""
 optional = false
 python-versions = ">=3.10,<3.13"
@@ -721,16 +721,15 @@ pydantic-settings = "^2.0.3"
 pyturbojpeg = "^1.7.2"
 pyyaml = "^6.0.1"
 redis = "^5.0.0"
-visionapi = {git = "https://github.com/starwit/vision-api.git", tag = "1.1.0", subdirectory = "python/visionapi"}
 
 [package.source]
 type = "git"
 url = "https://github.com/starwit/vision-lib.git"
-reference = "0.6.2"
-resolved_reference = "eef4ff70d0f63cebf0ec15ddfb253d724ee23e41"
+reference = "0.7.0"
+resolved_reference = "ca991c4955ddb57e908a025dbef7c67cac56793e"
 subdirectory = "python"
 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "d2a0060d62f48a2f6b00683b63feac487b31855a4dd835dffffe65d64e6e8212"
+content-hash = "b04a1ff09aa79c95493696556afecf7f751355aafc8aa0658adaecdf17d74daf"
