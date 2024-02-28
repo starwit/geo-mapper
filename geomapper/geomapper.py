@@ -58,6 +58,8 @@ class GeoMapper:
         sae_msg = self._unpack_proto(input_proto)
 
         camera = self._cameras.get(sae_msg.frame.source_id)
+        image_height_px = camera.parameters.parameters['image_height_px'].value
+        image_width_px = camera.parameters.parameters['image_width_px'].value
 
         if camera is None:
             return sae_msg
@@ -65,7 +67,7 @@ class GeoMapper:
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
                 center = self._get_center(detection.bounding_box)
-                gps = camera.gpsFromImage([center.x * sae_msg.frame.shape.width, center.y * sae_msg.frame.shape.height])
+                gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px])
                 lat, lon = gps[0], gps[1]
                 detection.geo_coordinate.latitude = lat
                 detection.geo_coordinate.longitude = lon
