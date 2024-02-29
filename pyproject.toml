@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geomapper"
-version = "0.1.1"
+version = "0.2.0"
 description = ""
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPLv3"
@@ -14,7 +14,7 @@ visionlib = { git = "https://github.com/starwit/vision-lib.git", subdirectory = 
 redis = "^5.0.0"
 pydantic-settings = "^2.0.3"
 prometheus-client = "^0.17.1"
-cameratransform = "^1.2"
+cameratransform = { git = "https://github.com/rgerum/cameratransform", rev = "f97b533" }
 
 [build-system]
 requires = ["poetry-core"]

@@ -12,17 +12,21 @@ class RedisConfig(BaseModel):
 
 class CameraConfig(BaseModel):
     stream_id: str
-    focallength_mm: float
-    sensor_height_mm: float
-    sensor_width_mm: float
-    image_width_px: int
-    image_height_px: int
-    elevation_m: float
-    tilt_deg: float
-    pos_lat: float
-    pos_lon: float
-    heading_deg: float
-
+    focallength_mm: float = None
+    sensor_height_mm: float = None
+    sensor_width_mm: float = None
+    view_x_deg: float = None
+    view_y_deg: float = None
+    image_width_px: int = None
+    image_height_px: int = None
+    elevation_m: float = None
+    tilt_deg: float = None
+    pos_lat: float = None
+    pos_lon: float = None
+    heading_deg: float = None
+    abc_distortion_a: float = 0
+    abc_distortion_b: float = 0
+    abc_distortion_c: float = 0
 
 class GeoMapperConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING

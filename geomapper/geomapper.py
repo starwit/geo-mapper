@@ -34,18 +34,25 @@ class GeoMapper:
     def _setup(self):
         for cam_conf in self.config.cameras:
             camera = ct.Camera(
-                ct.RectilinearProjection(
+                projection=ct.RectilinearProjection(
                     focallength_mm=cam_conf.focallength_mm,
                     sensor_height_mm=cam_conf.sensor_height_mm,
                     sensor_width_mm=cam_conf.sensor_width_mm,
                     image_height_px=cam_conf.image_height_px,
                     image_width_px=cam_conf.image_width_px,
+                    view_x_deg=cam_conf.view_x_deg,
+                    view_y_deg=cam_conf.view_y_deg, 
                 ),
-                ct.SpatialOrientation(
+                orientation=ct.SpatialOrientation(
                     elevation_m=cam_conf.elevation_m,
                     tilt_deg=cam_conf.tilt_deg,
                     heading_deg=cam_conf.heading_deg,
-                )
+                ),
+                lens=ct.ABCDistortion(
+                    a=cam_conf.abc_distortion_a, 
+                    b=cam_conf.abc_distortion_b, 
+                    c=cam_conf.abc_distortion_c,
+                ),
             )
             camera.setGPSpos(lat=cam_conf.pos_lat, lon=cam_conf.pos_lon)
             self._cameras[cam_conf.stream_id] = camera
