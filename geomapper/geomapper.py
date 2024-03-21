@@ -33,6 +33,9 @@ class GeoMapper:
 
     def _setup(self):
         for cam_conf in self.config.cameras:
+            if cam_conf.passthrough:
+                continue
+            
             camera = ct.Camera(
                 projection=ct.RectilinearProjection(
                     focallength_mm=cam_conf.focallength_mm,

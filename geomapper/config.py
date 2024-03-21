@@ -12,6 +12,7 @@ class RedisConfig(BaseModel):
 
 class CameraConfig(BaseModel):
     stream_id: str
+    passthrough: bool
     focallength_mm: float = None
     sensor_height_mm: float = None
     sensor_width_mm: float = None

@@ -46,6 +46,8 @@ def run_stage():
     consume = RedisConsumer(CONFIG.redis.host, CONFIG.redis.port, 
                             stream_keys=[f'{CONFIG.redis.input_stream_prefix}:{cam.stream_id}' for cam in CONFIG.cameras])
     publish = RedisPublisher(CONFIG.redis.host, CONFIG.redis.port)
+
+    PASSTHROUGH_IDS = [ cam.stream_id for cam in CONFIG.cameras if cam.passthrough == True ]
     
     with consume, publish:
         for stream_key, proto_data in consume():
@@ -59,7 +61,7 @@ def run_stage():
 
             FRAME_COUNTER.inc()
 
-            output_proto_data = geo_mapper.get(proto_data)
+            output_proto_data = geo_mapper.get(proto_data) if stream_id not in PASSTHROUGH_IDS else proto_data
 
             if output_proto_data is None:
                 continue
