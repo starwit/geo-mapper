@@ -69,7 +69,7 @@ class GeoMapper:
         image_width_px = camera.parameters.parameters['image_width_px'].value
 
         if camera is None:
-            return sae_msg
+            return input_proto
 
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
