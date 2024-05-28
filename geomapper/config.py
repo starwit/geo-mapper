@@ -1,12 +1,14 @@
-from pydantic import BaseModel, conint, conlist
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from visionlib.pipeline.settings import LogLevel, YamlConfigSettingsSource
 from typing import List
+
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Annotated
+from visionlib.pipeline.settings import LogLevel, YamlConfigSettingsSource
 
 
 class RedisConfig(BaseModel):
     host: str = 'localhost'
-    port: conint(ge=1, le=65536) = 6379
+    port: Annotated[int, Field(ge=1, le=65536)] = 6379
     input_stream_prefix: str = 'objecttracker'
     output_stream_prefix: str = 'geomapper'
 
@@ -33,7 +35,6 @@ class GeoMapperConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING
     redis: RedisConfig
     cameras: List[CameraConfig]
-
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')
 
