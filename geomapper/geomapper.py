@@ -35,6 +35,21 @@ class GeoMapper:
         for cam_conf in self.config.cameras:
             if cam_conf.passthrough:
                 continue
+
+            lens_correction = ct.NoDistortion()
+            if cam_conf.abc_distortion_a is not None:
+                lens_correction = ct.ABCDistortion(
+                    a=cam_conf.abc_distortion_a, 
+                    b=cam_conf.abc_distortion_b, 
+                    c=cam_conf.abc_distortion_c,
+                )
+            if cam_conf.brown_distortion_k1 is not None:
+                lens_correction = ct.BrownLensDistortion(
+                    k1=cam_conf.brown_distortion_k1,
+                    k2=cam_conf.brown_distortion_k2,
+                    k3=cam_conf.brown_distortion_k3,
+                )
+
             
             camera = ct.Camera(
                 projection=ct.RectilinearProjection(
@@ -50,12 +65,9 @@ class GeoMapper:
                     elevation_m=cam_conf.elevation_m,
                     tilt_deg=cam_conf.tilt_deg,
                     heading_deg=cam_conf.heading_deg,
+                    roll_deg=cam_conf.roll_deg,
                 ),
-                lens=ct.ABCDistortion(
-                    a=cam_conf.abc_distortion_a, 
-                    b=cam_conf.abc_distortion_b, 
-                    c=cam_conf.abc_distortion_c,
-                ),
+                lens=lens_correction,
             )
             camera.setGPSpos(lat=cam_conf.pos_lat, lon=cam_conf.pos_lon)
             self._cameras[cam_conf.stream_id] = camera
@@ -77,7 +89,7 @@ class GeoMapper:
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
                 center = self._get_center(detection.bounding_box)
-                gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px])
+                gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px], Z=self.config.object_center_elevation_m)
                 lat, lon = gps[0], gps[1]
                 detection.geo_coordinate.latitude = lat
                 detection.geo_coordinate.longitude = lon

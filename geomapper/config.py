@@ -24,17 +24,22 @@ class CameraConfig(BaseModel):
     image_height_px: int = None
     elevation_m: float = None
     tilt_deg: float = None
+    roll_deg: float = None
     pos_lat: float = None
     pos_lon: float = None
     heading_deg: float = None
-    abc_distortion_a: float = 0
-    abc_distortion_b: float = 0
-    abc_distortion_c: float = 0
+    abc_distortion_a: float = None
+    abc_distortion_b: float = None
+    abc_distortion_c: float = None
+    brown_distortion_k1: float = None
+    brown_distortion_k2: float = None
+    brown_distortion_k3: float = None
 
 class GeoMapperConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING
     redis: RedisConfig
     cameras: List[CameraConfig]
+    object_center_elevation_m: float = 0
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')
 
