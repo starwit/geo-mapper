@@ -115,7 +115,7 @@ class GeoMapper:
     
     def _is_filtered(self, cam_id: str, lat: float, lon: float):
         if cam_id in self._mapping_areas:
-            point = ShapelyPoint(lat, lon)
+            point = ShapelyPoint(lon, lat)
             return not self._mapping_areas[cam_id].contains(point)
 
     @PROTO_DESERIALIZATION_DURATION.time()
