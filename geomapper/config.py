@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 
+from geojson_pydantic import Polygon
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Annotated
@@ -34,6 +35,7 @@ class CameraConfig(BaseModel):
     brown_distortion_k1: float = None
     brown_distortion_k2: float = None
     brown_distortion_k3: float = None
+    mapping_area: Optional[Polygon] = None
 
 class GeoMapperConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING

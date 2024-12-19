@@ -3,6 +3,9 @@ from typing import Any, Dict, NamedTuple
 
 import cameratransform as ct
 from prometheus_client import Counter, Histogram, Summary
+from shapely import Point as ShapelyPoint
+from shapely import Polygon
+from shapely.geometry import shape
 from visionapi.messages_pb2 import BoundingBox, SaeMessage
 
 from .config import GeoMapperConfig
@@ -24,15 +27,16 @@ class Point(NamedTuple):
 
 class GeoMapper:
     def __init__(self, config: GeoMapperConfig) -> None:
-        self.config = config
-        logger.setLevel(self.config.log_level.value)
+        self._config = config
+        logger.setLevel(self._config.log_level.value)
 
         self._cameras: Dict[str, ct.Camera] = dict()
+        self._mapping_areas: Dict[str, Polygon] = dict()
 
         self._setup()
 
     def _setup(self):
-        for cam_conf in self.config.cameras:
+        for cam_conf in self._config.cameras:
             if cam_conf.passthrough:
                 continue
 
@@ -72,6 +76,9 @@ class GeoMapper:
             camera.setGPSpos(lat=cam_conf.pos_lat, lon=cam_conf.pos_lon)
             self._cameras[cam_conf.stream_id] = camera
 
+            if cam_conf.mapping_area is not None:
+                self._mapping_areas[cam_conf.stream_id] = shape(cam_conf.mapping_area)
+
     def __call__(self, input_proto) -> Any:
         return self.get(input_proto)
     
@@ -89,8 +96,11 @@ class GeoMapper:
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
                 center = self._get_center(detection.bounding_box)
-                gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px], Z=self.config.object_center_elevation_m)
+                gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px], Z=self._config.object_center_elevation_m)
                 lat, lon = gps[0], gps[1]
+                if self._is_filtered(sae_msg.frame.source_id, lat, lon):
+                    logger.debug(f'SKIPPED: cls {detection.class_id}, oid {detection.object_id.hex()}, lat {lat}, lon {lon}')
+                    continue
                 detection.geo_coordinate.latitude = lat
                 detection.geo_coordinate.longitude = lon
                 logger.debug(f'cls {detection.class_id}, oid {detection.object_id.hex()}, lat {lat}, lon {lon}')
@@ -102,6 +112,11 @@ class GeoMapper:
             x=(bbox.min_x + bbox.max_x) / 2,
             y=(bbox.min_y + bbox.max_y) / 2
         )
+    
+    def _is_filtered(self, cam_id: str, lat: float, lon: float):
+        if cam_id in self._mapping_areas:
+            point = ShapelyPoint(lat, lon)
+            return not self._mapping_areas[cam_id].contains(point)
 
     @PROTO_DESERIALIZATION_DURATION.time()
     def _unpack_proto(self, sae_message_bytes):

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geomapper"
-version = "0.4.0"
+version = "0.5.0"
 description = ""
 authors = ["flonix8 <flstanek@googlemail.com>"]
 license = "AGPLv3"
@@ -15,6 +15,8 @@ redis = "^5.0.0"
 pydantic-settings = "^2.0.3"
 prometheus-client = "^0.17.1"
 cameratransform = { git = "https://github.com/rgerum/cameratransform", rev = "ed36491" }
+geojson-pydantic = "^1.1.2"
+shapely = "^2.0.6"
 
 [build-system]
 requires = ["poetry-core"]
