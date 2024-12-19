@@ -14,12 +14,12 @@ cameras:
     tilt_deg: 45                # 0° => camera facing straight down (image plane parallel to the ground), 90° => camera pointed at horizon (image plane 90° to the ground)
     roll_deg: 0                 # Rotation of the camera along the optical axis
     heading_deg: 90             # Camera heading (i.e. in which direction the camera is pointed)
-    abc_distortion_a: None      # You must only specify not-none parameters for one of the distortion models (or none at all, if no correction is needed)
-    abc_distortion_b: None
-    abc_distortion_c: None
-    brown_distortion_k1: None   # See above
-    brown_distortion_k2: None
-    brown_distortion_k3: None
+    abc_distortion_a: null      # You must only specify not-none parameters for one of the distortion models (or none at all, if no correction is needed)
+    abc_distortion_b: null
+    abc_distortion_c: null
+    brown_distortion_k1: null   # See above
+    brown_distortion_k2: null
+    brown_distortion_k3: null
     mapping_area:               # Must be a geojson `Polygon`. If set, only detections within that polygon will be mapped (i.e. will have coordinates set)
       type: Polygon
       coordinates: [[
