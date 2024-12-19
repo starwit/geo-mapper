@@ -20,6 +20,15 @@ cameras:
     brown_distortion_k1: None   # See above
     brown_distortion_k2: None
     brown_distortion_k3: None
+    mapping_area:               # Must be a geojson `Polygon`. If set, only detections within that polygon will be mapped (i.e. will have coordinates set)
+      type: Polygon
+      coordinates: [[
+          [52.42437380555923, 10.786768622047525],
+          [52.42435988203632, 10.787004365640092],
+          [52.424133935311794, 10.786939975609606],
+          [52.42413337422841, 10.786721564672098],
+          [52.42437380555923, 10.786768622047525],
+        ]]
 
 object_center_elevation_m: 0    # Elevation of the object center above ground (used for correcting perspective when mapping object locations into 3D space). In many cases 1.0m makes sense as a starting point.
 
