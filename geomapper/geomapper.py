@@ -1,14 +1,14 @@
 import logging
-from typing import Any, Dict, NamedTuple
+from typing import Any, Dict, List, NamedTuple
 
 import cameratransform as ct
 from prometheus_client import Counter, Histogram, Summary
 from shapely import Point as ShapelyPoint
 from shapely import Polygon
 from shapely.geometry import shape
-from visionapi.messages_pb2 import BoundingBox, SaeMessage
+from visionapi.messages_pb2 import BoundingBox, Detection, SaeMessage
 
-from .config import GeoMapperConfig
+from .config import CameraConfig, GeoMapperConfig
 
 logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
 logger = logging.getLogger(__name__)
@@ -31,6 +31,7 @@ class GeoMapper:
         logger.setLevel(self._config.log_level.value)
 
         self._cameras: Dict[str, ct.Camera] = dict()
+        self._cam_configs: Dict[str, CameraConfig] = dict()
         self._mapping_areas: Dict[str, Polygon] = dict()
 
         self._setup()
@@ -54,7 +55,6 @@ class GeoMapper:
                     k3=cam_conf.brown_distortion_k3,
                 )
 
-            
             camera = ct.Camera(
                 projection=ct.RectilinearProjection(
                     focallength_mm=cam_conf.focallength_mm,
@@ -75,6 +75,7 @@ class GeoMapper:
             )
             camera.setGPSpos(lat=cam_conf.pos_lat, lon=cam_conf.pos_lon)
             self._cameras[cam_conf.stream_id] = camera
+            self._cam_configs[cam_conf.stream_id] = cam_conf
 
             if cam_conf.mapping_area is not None:
                 self._mapping_areas[cam_conf.stream_id] = shape(cam_conf.mapping_area)
@@ -85,25 +86,33 @@ class GeoMapper:
     @GET_DURATION.time()
     def get(self, input_proto):
         sae_msg = self._unpack_proto(input_proto)
+        cam_id = sae_msg.frame.source_id
 
-        camera = self._cameras.get(sae_msg.frame.source_id)
+        camera = self._cameras.get(cam_id)
         image_height_px = camera.parameters.parameters['image_height_px'].value
         image_width_px = camera.parameters.parameters['image_width_px'].value
 
         if camera is None:
             return input_proto
 
+        retained_detections: List[Detection] = []
+
         with TRANSFORM_DURATION.time():
             for detection in sae_msg.detections:
                 center = self._get_center(detection.bounding_box)
                 gps = camera.gpsFromImage([center.x * image_width_px, center.y * image_height_px], Z=self._config.object_center_elevation_m)
                 lat, lon = gps[0], gps[1]
-                if self._is_filtered(sae_msg.frame.source_id, lat, lon):
+                if self._is_filtered(cam_id, lat, lon):
                     logger.debug(f'SKIPPED: cls {detection.class_id}, oid {detection.object_id.hex()}, lat {lat}, lon {lon}')
                     continue
                 detection.geo_coordinate.latitude = lat
                 detection.geo_coordinate.longitude = lon
+                retained_detections.append(detection)
                 logger.debug(f'cls {detection.class_id}, oid {detection.object_id.hex()}, lat {lat}, lon {lon}')
+        
+        if self._cam_configs[cam_id].remove_unmapped_detections:
+            sae_msg.ClearField('detections')
+            sae_msg.detections.extend(retained_detections)
 
         return self._pack_proto(sae_msg)
         

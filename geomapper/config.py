@@ -36,6 +36,7 @@ class CameraConfig(BaseModel):
     brown_distortion_k2: float = None
     brown_distortion_k3: float = None
     mapping_area: Optional[Polygon] = None
+    remove_unmapped_detections: bool = False
 
 class GeoMapperConfig(BaseSettings):
     log_level: LogLevel = LogLevel.WARNING
