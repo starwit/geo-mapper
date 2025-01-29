@@ -1,6 +1,6 @@
 cameras:
-  - stream_id: stream
-    passthrough: false          # If the stream should be passed through without geo mapping (all other parameters are ignored if true)
+  - stream_id: stream_geomap
+    passthrough: false          # If the stream should be passed through without geo mapping (all other parameters except `pos_lon` and `pos_lat` are ignored if true)
     view_x_deg: 90              # Horizontal angle of view in degrees. If you only specify view_x_deg, view_y_deg is chosen according to the image aspect ratio
     view_y_deg: 54
     image_width_px: 1920
@@ -8,8 +8,8 @@ cameras:
     focallength_mm: 20          # view_*_deg and image dimensions are equivalent (only one set of parameters should be set!). Sensor size is harder to obtain and therefore only second choice.
     sensor_height_mm: 16        # See above
     sensor_width_mm: 9          # See above
-    pos_lat: 52                 # Camera latitude
-    pos_lon: 10                 # Camera longitude
+    pos_lat: 52                 # Camera latitude (is added to metadata if set, can be used in passthrough mode)
+    pos_lon: 10                 # Camera longitude (is added to metadata if set, can be used in passthrough mode)
     elevation_m: 10             # Camera height above ground
     tilt_deg: 45                # 0° => camera facing straight down (image plane parallel to the ground), 90° => camera pointed at horizon (image plane 90° to the ground)
     roll_deg: 0                 # Rotation of the camera along the optical axis
@@ -26,6 +26,12 @@ cameras:
           [10, 50],
         ]]
     remove_unmapped_detections: false # If unmapped detections should be removed (i.e. detections filtered by mapping_area, see above)
+  - stream_id: stream_passthrough_with_loc
+    passthrough: true
+    pos_lat: 52
+    pos_lon: 10
+  - stream_id: stream_passthrough
+    passthrough: true
 
 object_center_elevation_m: 0    # Elevation of the object center above ground (used for correcting perspective when mapping object locations into 3D space). In many cases 1.0m makes sense as a starting point.
 
