@@ -1,6 +1,7 @@
 # SAE geo-mapper
 
-A SAE stage that maps object locations from camera / pixel space to geo-coordinate space. For that it needs to be configured with a number of optical and geometrical camera parameters.
+A SAE stage that maps object locations from camera / pixel space to geo-coordinate space. For that it needs to be configured with a number of optical and geometrical camera parameters.\
+Also adds camera location information to all passing `SaeMessage` messages when corresponding parameters are set.
 
 ## Setup
 Due to `cameratransform` being stuck on Python 3.11 (due to Pandas 1.x), we need to use pyenv for this repository.
@@ -13,3 +14,8 @@ Due to `cameratransform` being stuck on Python 3.11 (due to Pandas 1.x), we need
 ## Input/Output
 - **Input** message must be a `SaeMessage`. The geo-mapping is done on each `Detection` message within. If there are no `Detection` messages, the processing is effectively a no-op.
 - **Output** is the input `SaeMessage` with geo-coordinates added to every `Detection`. All other fields are preserved.
+
+# Changelog
+## 0.7.0
+- Upgrade `vision-api` to `3.1.0`
+- Add `SaeMessage.frame.camera_location` if `pos_lat` and `pos_lon` is set (independent of `passthrough` mode)
