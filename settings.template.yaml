@@ -14,24 +14,29 @@ cameras:
     tilt_deg: 45                # 0° => camera facing straight down (image plane parallel to the ground), 90° => camera pointed at horizon (image plane 90° to the ground)
     roll_deg: 0                 # Rotation of the camera along the optical axis
     heading_deg: 90             # Camera heading (i.e. in which direction the camera is pointed)
-    abc_distortion_a: null      # You must only specify not-none parameters for one of the distortion models (or none at all, if no correction is needed)
-    abc_distortion_b: null
-    abc_distortion_c: null
-    brown_distortion_k1: null   # See above
-    brown_distortion_k2: null
-    brown_distortion_k3: null
+    abc_distortion_a: 0.0       # You must only specify not-none parameters for one of the distortion models (or none at all, if no correction is needed)
+    abc_distortion_b: 0.0
+    abc_distortion_c: 0.0
+    brown_distortion_k1: 0.0   # See above
+    brown_distortion_k2: 0.0
+    brown_distortion_k3: 0.0
     mapping_area:               # Must be a geojson `Polygon`. If set, only detections within that polygon will be mapped (i.e. will have coordinates set)
       type: Polygon
       coordinates: [[           # [lon, lat] format. The last point must equal the first!
-          [10, 50],
+          [10.01, 50.01],
+          [10.02, 50.02],
+          [10.02, 50.03],
+          [10.03, 50.02],
+          [10.01, 50.01]
         ]]
     remove_unmapped_detections: false # If unmapped detections should be removed (i.e. detections filtered by mapping_area, see above)
-  - stream_id: stream_passthrough_with_loc
-    passthrough: true
-    pos_lat: 52
-    pos_lon: 10
-  - stream_id: stream_passthrough
-    passthrough: true
+    
+  # - stream_id: stream_passthrough_with_loc
+  #   passthrough: true
+  #   pos_lat: 52
+  #   pos_lon: 10
+  # - stream_id: stream_passthrough
+  #   passthrough: true
 
 object_center_elevation_m: 0    # Elevation of the object center above ground (used for correcting perspective when mapping object locations into 3D space). In many cases 1.0m makes sense as a starting point.
 
@@ -39,3 +44,5 @@ log_level: DEBUG
 redis:
   host: redis
   port: 6379
+
+prometheus_port: 8000

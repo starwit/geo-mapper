@@ -37,7 +37,7 @@ def run_stage():
 
     logger.info(f'Starting prometheus metrics endpoint on port {PROMETHEUS_METRICS_PORT}')
 
-    start_http_server(PROMETHEUS_METRICS_PORT)
+    start_http_server(CONFIG.prometheus_port)
 
     logger.info(f'Starting geo mapper stage. Config: {CONFIG.model_dump_json(indent=2)}')
 

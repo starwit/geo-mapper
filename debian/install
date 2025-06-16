@@ -1,0 +1,4 @@
+settings.yaml /etc/starwit/geomapper
+main.py /opt/starwit/geomapper
+
+debian/geomapper.service /usr/lib/systemd/system/

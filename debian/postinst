@@ -1,0 +1,40 @@
+#!/bin/bash
+set -e
+
+# Install Python packages that aren't available via APT
+if [ "$1" = "configure" ]; then
+
+    echo "Object Mapper: Installing Python dependencies"
+    pip3 install --upgrade pip
+    pip3 install pyturbojpeg
+    pip3 install git+https://github.com/starwit/vision-api.git@3.2.0#subdirectory=python/visionapi
+    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.2#subdirectory=python
+    pip3 install cameratransform
+
+    pip3 install geojson-pydantic shapely
+
+    echo "Create wrapper script"
+    mkdir -p /usr/local/bin
+    cat > /usr/local/bin/geomapper <<EOF
+#!/bin/bash
+
+current_dir=$PWD
+cd /opt/starwit/geomapper
+
+python3 main.py "\$@"
+cd $current_dir
+EOF
+    chmod +x /usr/local/bin/geomapper    
+
+    # link settings file from etc
+    cd /opt/starwit/geomapper
+    ln -s /etc/starwit/geomapper/settings.yaml settings.yaml
+
+    systemctl daemon-reload
+    systemctl start geomapper.service        
+    systemctl enable geomapper.service
+fi
+
+#DEBHELPER#
+
+exit 0
