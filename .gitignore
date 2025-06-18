@@ -9,3 +9,4 @@ cache
 !settings.template.yaml
 target
 dist
+debian/geomapper*

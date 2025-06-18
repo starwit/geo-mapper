@@ -9,7 +9,7 @@ if [ "$1" = "configure" ]; then
     pip3 install pyturbojpeg
     pip3 install git+https://github.com/starwit/vision-api.git@3.2.0#subdirectory=python/visionapi
     pip3 install git+https://github.com/starwit/vision-lib.git@0.11.2#subdirectory=python
-    pip3 install cameratransform
+    pip3 install git+https://github.com/rgerum/cameratransform.git@ed36491b3003bf8429515f3df1c3e319e56eae49
 
     pip3 install geojson-pydantic shapely
 
