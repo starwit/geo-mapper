@@ -29,12 +29,12 @@ class CameraConfig(BaseModel):
     pos_lat: float = None
     pos_lon: float = None
     heading_deg: float = None
-    abc_distortion_a: float = None
-    abc_distortion_b: float = None
-    abc_distortion_c: float = None
-    brown_distortion_k1: float = None
-    brown_distortion_k2: float = None
-    brown_distortion_k3: float = None
+    abc_distortion_a: Optional[float] = None
+    abc_distortion_b: Optional[float] = None
+    abc_distortion_c: Optional[float] = None
+    brown_distortion_k1: Optional[float] = None
+    brown_distortion_k2: Optional[float] = None
+    brown_distortion_k3: Optional[float] = None
     mapping_area: Optional[Polygon] = None
     remove_unmapped_detections: bool = False
 
