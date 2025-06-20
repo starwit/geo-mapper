@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mkdir -p /etc/starwit/geomapper
+mkdir -p /opt/starwit/geomapper

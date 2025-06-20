@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+
+    # Stop the service
+    systemctl stop geomapper.service
+
+    # Disable the service
+    systemctl disable geomapper.service
+
+    # Remove the service file
+    rm -f /etc/systemd/system/geomapper.service
+
+    systemctl daemon-reload
+
+    # Remove the wrapper script
+    rm -f /usr/local/bin/geomapper
+    
+    # Remove application directory
+    rm -rf /opt/starwit/geomapper
+
+    # Remove config files directory
+    rm -rf /etc/starwit/geomapper
+fi
+
+#DEBHELPER#
+
+exit 0
