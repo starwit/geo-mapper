@@ -6,7 +6,9 @@ cache
 *.pt
 .vscode
 *.yaml
+!.github/workflows/*.yaml
 !settings.template.yaml
 target
 dist
 debian/geomapper*
+env.sh
