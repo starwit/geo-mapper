@@ -4,14 +4,11 @@ set -e
 # Install Python packages that aren't available via APT
 if [ "$1" = "configure" ]; then
 
-    echo "Object Mapper: Installing Python dependencies"
-    pip3 install --upgrade pip
-    pip3 install pyturbojpeg
-    pip3 install git+https://github.com/starwit/vision-api.git@3.2.0#subdirectory=python/visionapi
-    pip3 install git+https://github.com/starwit/vision-lib.git@0.11.2#subdirectory=python
-    pip3 install git+https://github.com/rgerum/cameratransform.git@ed36491b3003bf8429515f3df1c3e319e56eae49
-
-    pip3 install geojson-pydantic shapely
+    echo "Create virtual environment for application"
+    cd "/opt/starwit/geomapper"
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt 
 
     echo "Create wrapper script"
     mkdir -p /usr/local/bin
@@ -20,8 +17,9 @@ if [ "$1" = "configure" ]; then
 
 current_dir=$PWD
 cd /opt/starwit/geomapper
+source .venv/bin/activate
 
-python3 main.py "\$@"
+python main.py "\$@"
 cd $current_dir
 EOF
     chmod +x /usr/local/bin/geomapper    
