@@ -2,11 +2,14 @@
 
 export PACKAGE_NAME=geomapper
 
-install:
+install: check-settings
 	poetry install
 
 check-settings:
 	./check_settings.sh
+
+test: install
+	poetry run pytest
 
 set-version:
 	$(eval VERSION := $(shell poetry version -s))
