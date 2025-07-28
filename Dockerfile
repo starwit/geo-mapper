@@ -1,14 +1,6 @@
-FROM python:3.11-slim AS build
+FROM starwitorg/base-python-image:0.0.15 AS build
 
-RUN apt update && apt install --no-install-recommends -y \
-    curl \
-    git \
-    build-essential
-
-ARG POETRY_VERSION
-ENV POETRY_HOME=/opt/poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="${POETRY_HOME}/bin:${PATH}"
+RUN apt update && apt install --no-install-recommends -y
 
 # Copy only files that are necessary to install dependencies
 COPY poetry.lock poetry.toml pyproject.toml /code/
@@ -30,5 +22,15 @@ RUN apt update && apt install --no-install-recommends -y \
 
 COPY --from=build /code /code
 WORKDIR /code
+
+# Create a non-root user and group
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+# Change ownership of the files to the non-root user
+RUN chown -R appuser:appgroup /code
+
+# Switch to non-root user
+USER appuser
+
 ENV PATH="/code/.venv/bin:$PATH"
 CMD [ "python", "main.py" ]

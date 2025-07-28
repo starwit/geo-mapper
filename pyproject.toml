@@ -17,6 +17,7 @@ prometheus-client = "^0.17.1"
 cameratransform = { git = "https://github.com/rgerum/cameratransform", rev = "ed36491" }
 geojson-pydantic = "^1.1.2"
 shapely = "^2.0.6"
+pytest = "8.4.1"
 
 [build-system]
 requires = ["poetry-core"]
