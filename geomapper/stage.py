@@ -42,8 +42,7 @@ def run_stage():
     geo_mapper = GeoMapper(CONFIG)
 
     stream_keys=[f'{CONFIG.redis.input_stream_prefix}:{cam.stream_id}' for cam in CONFIG.cameras]
-    print(stream_keys)
-    stream_keys.append('positionsource:self')
+    
     consume = RedisConsumer(CONFIG.redis.host, CONFIG.redis.port, 
                             stream_keys)
     publish = RedisPublisher(CONFIG.redis.host, CONFIG.redis.port)
@@ -54,10 +53,6 @@ def run_stage():
                 break
 
             if stream_key is None:
-                continue
-
-            if stream_key == 'positionsource:self':
-                geo_mapper.update_position(proto_data)
                 continue
 
             stream_id = stream_key.split(':')[1]

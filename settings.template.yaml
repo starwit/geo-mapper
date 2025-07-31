@@ -32,6 +32,7 @@ cameras:
     remove_unmapped_detections: false # If unmapped detections should be removed (i.e. detections filtered by mapping_area, see above)
 
 object_center_elevation_m: 0    # Elevation of the object center above ground (used for correcting perspective when mapping object locations into 3D space). In many cases 1.0m makes sense as a starting point.
+max_position_delay: 1500 # if timestamps of position update and video frames is too large, detections will be ignored
 
 log_level: DEBUG
 redis:
