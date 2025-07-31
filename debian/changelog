@@ -1,8 +1,14 @@
 geomapper (###RELEASE_VERSION###) unstable; urgency=medium
 
+  * Dynamic Positioning
+
+ -- Florian Stanek <foss@starwit.de>  Tue, 31 Jul 2025 00:00:00 +0000
+
+geomapper (0.8.0) unstable; urgency=medium
+
   * Workflow release
 
- -- Florian Stanek <foss@starwit.de>  Tue, 22 Jul 2025 00:00:00 +0000
+ -- Florian Stanek <foss@starwit.de>  Sun, 08 Jun 2025 00:00:00 +0000
 
 geomapper (0.7.0) unstable; urgency=medium
 

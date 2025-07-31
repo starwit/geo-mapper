@@ -1,7 +1,8 @@
-# SAE geo-mapper
+# SAE GEO Mapper
 
 A SAE stage that maps object locations from camera / pixel space to geo-coordinate space. For that it needs to be configured with a number of optical and geometrical camera parameters.\
-Also adds camera location information to all passing `SaeMessage` messages when corresponding parameters are set.
+
+Also adds camera location from component [Position Source](https://github.com/starwit/sae-position-source) if present in an SAE instance. If not position can be configured statically in [settings.yaml](settings.template.yaml).
 
 ## Quick Setup
 Due to `cameratransform` being stuck on Python 3.11 (due to Pandas 1.x), we need to use pyenv for this repository.

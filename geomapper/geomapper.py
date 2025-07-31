@@ -7,7 +7,7 @@ from prometheus_client import Counter, Histogram, Summary
 from shapely import Point as ShapelyPoint
 from shapely import Polygon
 from shapely.geometry import shape
-from visionapi.sae_pb2 import BoundingBox, Detection, SaeMessage
+from visionapi.sae_pb2 import BoundingBox, Detection, SaeMessage, PositionMessage
 
 from .config import CameraConfig, GeoMapperConfig
 
@@ -99,6 +99,17 @@ class GeoMapper:
         self._transform_detections(sae_msg, camera)
 
         return self._pack_proto(sae_msg)
+    
+    def update_position(self, input_proto):
+        positionMessage = PositionMessage()
+        positionMessage.ParseFromString(input_proto)
+        logger.debug(f'received position update: {positionMessage}')
+        if(positionMessage.geo_coordinate == None or positionMessage.geo_coordinate.latitude == 0.0):
+            return
+        for camera in self._cameras:
+            logger.info(f'Updating camera position lat {positionMessage.geo_coordinate.latitude}, long {positionMessage.geo_coordinate.longitude}')
+            self._cameras[camera].setGPSpos(positionMessage.geo_coordinate.latitude, positionMessage.geo_coordinate.longitude)
+        
 
     def _add_cam_location(self, sae_msg: SaeMessage):
         '''Add camera location data, if location is configured (independent of the passthrough setting)'''
