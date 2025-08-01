@@ -2,7 +2,7 @@
 
 A SAE stage that maps object locations from camera / pixel space to geo-coordinate space. For that it needs to be configured with a number of optical and geometrical camera parameters.\
 
-Also adds camera location from component [Position Source](https://github.com/starwit/sae-position-source) if present in an SAE instance. If not position can be configured statically in [settings.yaml](settings.template.yaml).
+Geo Mapper can be run in two fundamental modes: static and dynamic. Static means, that for every videosource (camera) next to necessary mapping data position data is configured in [settings.yaml](settings.template.yaml). In dynamic mode Geo Mapper will take camera position from video frames which are inserted by [video source component](https://github.com/starwit/video-source-py).
 
 ## Quick Setup
 Due to `cameratransform` being stuck on Python 3.11 (due to Pandas 1.x), we need to use pyenv for this repository.

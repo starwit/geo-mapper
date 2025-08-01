@@ -41,10 +41,8 @@ def run_stage():
 
     geo_mapper = GeoMapper(CONFIG)
 
-    stream_keys=[f'{CONFIG.redis.input_stream_prefix}:{cam.stream_id}' for cam in CONFIG.cameras]
-    
     consume = RedisConsumer(CONFIG.redis.host, CONFIG.redis.port, 
-                            stream_keys)
+                            stream_keys=[f'{CONFIG.redis.input_stream_prefix}:{cam.stream_id}' for cam in CONFIG.cameras])
     publish = RedisPublisher(CONFIG.redis.host, CONFIG.redis.port)
 
     with consume, publish:

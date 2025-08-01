@@ -1,9 +1,6 @@
 import logging
 from typing import Any, Dict, List, NamedTuple
 
-import pybase64
-import redis
-
 import cameratransform as ct
 from cameratransform.camera import Camera
 from prometheus_client import Counter, Histogram, Summary
@@ -38,7 +35,6 @@ class GeoMapper:
         self._cam_configs: Dict[str, CameraConfig] = dict()
         self._mapping_areas: Dict[str, Polygon] = dict()
         self._setup()
-        self._redis_client = redis.Redis(config.redis.host, config.redis.port)
 
     def _setup(self):
         for cam_conf in self._config.cameras:
@@ -79,6 +75,7 @@ class GeoMapper:
                 ),
                 lens=lens_correction,
             )
+            camera.setGPSpos(lat=cam_conf.pos_lat, lon=cam_conf.pos_lon)
             self._cameras[cam_conf.stream_id] = camera
 
             if cam_conf.mapping_area is not None:
@@ -90,26 +87,11 @@ class GeoMapper:
     @GET_DURATION.time()
     def get(self, input_proto):
         sae_msg = self._unpack_proto(input_proto)
-        
-        # read position data and parse it into PositionMessage
-        streamPositionMessage = self._redis_client.xrevrange('positionsource:self', count=1)
-        decodedPositionMessage = pybase64.b64decode(streamPositionMessage[0][1][b'proto_data_b64'])
-        positionMessage = PositionMessage()
-        positionMessage.ParseFromString(decodedPositionMessage)
-        if positionMessage.fix == False:
-            logger.warning('no position data - not processing Detections')
-            return None
-        if abs(positionMessage.timestamp_utc_ms - sae_msg.frame.timestamp_utc_ms) > self._config.max_position_delay:
-            logger.warning('position data and frame timestamp differ more than 1 second - not processing Detections')
-            return None
-        
-        for camera in self._cameras:
-            logger.debug(f'Updating camera position lat {positionMessage.geo_coordinate.latitude}, long {positionMessage.geo_coordinate.longitude}')
-            self._cameras[camera].setGPSpos(positionMessage.geo_coordinate.latitude, positionMessage.geo_coordinate.longitude)
-        
         stream_id = sae_msg.frame.source_id
 
         camera = self._cameras.get(stream_id)
+        
+        self._add_cam_location(sae_msg)
 
         if camera is None:
             return self._pack_proto(sae_msg)
@@ -117,8 +99,26 @@ class GeoMapper:
         self._transform_detections(sae_msg, camera)
 
         return self._pack_proto(sae_msg)
+      
+    def _add_cam_location(self, sae_msg: SaeMessage):
+        '''Add camera location data, if location is configured (independent of the passthrough setting)'''
+        stream_id = sae_msg.frame.source_id
         
-
+        if self._config.mapping_strategy.mode == 'static':
+            cam_lat = self._cam_configs[stream_id].pos_lat
+            cam_lon = self._cam_configs[stream_id].pos_lon
+            if cam_lat is not None and cam_lon is not None:
+                sae_msg.frame.camera_location.latitude = cam_lat
+                sae_msg.frame.camera_location.longitude = cam_lon
+        
+        if self._config.mapping_strategy.mode == 'dynamic':
+            if sae_msg.frame.camera_location != None or sae_msg.frame.camera_location.latitude != 0.0 :
+                for detection in sae_msg.detections:
+                    detection.geo_coordinate.latitude = sae_msg.frame.camera_location.latitude
+                    detection.geo_coordinate.longitude = sae_msg.frame.camera_location.longitude
+            else:
+                logger.warning(f'No camera location data in message for stream {stream_id}.')
+                pass
     
     def _transform_detections(self, sae_msg: SaeMessage, camera: Camera) -> None:
         '''Map detections into coordinate space, add coordinate to message and optionally filter detections that were not mapped'''
