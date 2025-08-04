@@ -34,7 +34,7 @@ cameras:
 object_center_elevation_m: 0    # Elevation of the object center above ground (used for correcting perspective when mapping object locations into 3D space). In many cases 1.0m makes sense as a starting point.
 
 mapping_strategy:
-  static: True # True: take mapping info from static configuration, False: use position from frame
+  mode: dynamic # static: take mapping from config file, dynamic: read from position from video frame
 
 log_level: DEBUG
 redis:
