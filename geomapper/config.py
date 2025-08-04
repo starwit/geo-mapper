@@ -6,12 +6,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Annotated
 from visionlib.pipeline.settings import LogLevel, YamlConfigSettingsSource
 
+from enum import Enum
+
+class MappingMode(str, Enum):
+    dynamic = 'dynamic'
+    static = 'static'
 
 class RedisConfig(BaseModel):
     host: str = 'localhost'
     port: Annotated[int, Field(ge=1, le=65536)] = 6379
     input_stream_prefix: str = 'objecttracker'
     output_stream_prefix: str = 'geomapper'
+    
+class MappingStrategy(BaseModel):
+    mode: MappingMode = MappingMode.dynamic 
 
 class CameraConfig(BaseModel):
     stream_id: str
@@ -43,7 +51,8 @@ class GeoMapperConfig(BaseSettings):
     redis: RedisConfig
     cameras: List[CameraConfig]
     object_center_elevation_m: float = 0
-    prometheus_port: Annotated[int, Field(gt=1024, le=65536)] = 8000    
+    mapping_strategy: MappingStrategy = MappingStrategy()
+    prometheus_port: Annotated[int, Field(gt=1024, le=65536)] = 8000
 
     model_config = SettingsConfigDict(env_nested_delimiter='__')
 
