@@ -9,7 +9,7 @@ from shapely import Polygon
 from shapely.geometry import shape
 from visionapi.sae_pb2 import BoundingBox, Detection, SaeMessage, PositionMessage
 
-from .config import CameraConfig, GeoMapperConfig
+from .config import CameraConfig, GeoMapperConfig, MappingMode
 
 logging.basicConfig(format='%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s')
 logger = logging.getLogger(__name__)
@@ -104,14 +104,14 @@ class GeoMapper:
         '''Add camera location data, if location is configured (independent of the passthrough setting)'''
         stream_id = sae_msg.frame.source_id
         
-        if self._config.mapping_strategy.mode == 'static':
+        if self._config.mapping_strategy.mode == MappingMode.static:
             cam_lat = self._cam_configs[stream_id].pos_lat
             cam_lon = self._cam_configs[stream_id].pos_lon
             if cam_lat is not None and cam_lon is not None:
                 sae_msg.frame.camera_location.latitude = cam_lat
                 sae_msg.frame.camera_location.longitude = cam_lon
         
-        if self._config.mapping_strategy.mode == 'dynamic':
+        if self._config.mapping_strategy.mode == MappingMode.dynamic:
             if sae_msg.frame.camera_location != None or sae_msg.frame.camera_location.latitude != 0.0 :
                 for detection in sae_msg.detections:
                     detection.geo_coordinate.latitude = sae_msg.frame.camera_location.latitude
