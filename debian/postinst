@@ -26,7 +26,7 @@ EOF
 
     # link settings file from etc
     cd /opt/starwit/geomapper
-    ln -s /etc/starwit/geomapper/settings.yaml settings.yaml
+    ln -sf /etc/starwit/geomapper/settings.yaml settings.yaml
 
     systemctl daemon-reload
     systemctl start geomapper.service        
